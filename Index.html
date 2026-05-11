@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBCS Aging Reports, A/R, A/P & Billing Tools Mastery Lab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+:root{
+  --bg:#f6f1eb; --bg2:#fffaf4; --card:#ffffff; --tx:#1c1815; --tx2:#5a5650; --tx3:#857e77;
+  --pri:#1b5f97; --pri2:#123d60; --priL:#dff1ff;
+  --grn:#1f7846; --grn2:#14552f; --grnL:#e2f7ea;
+  --org:#c66a12; --org2:#914a05; --orgL:#fff1e1;
+  --red:#b43a3a; --red2:#812525; --redL:#fdebec;
+  --pur:#6a44a6; --pur2:#4f327e; --purL:#efe8ff;
+  --teal:#117a74; --teal2:#0c5954; --tealL:#dff6f4;
+  --gold:#b28a16; --gold2:#81620d; --goldL:#fff7dd;
+  --rose:#a43d71; --rose2:#76264f; --roseL:#fde7f1;
+  --bdr:#ddd4ca; --r:16px; --r2:22px; --r3:30px;
+  --hd:'Crimson Pro', Georgia, serif; --bd:'Outfit','Segoe UI',sans-serif; --mn:'Fira Code',monospace;
+  --shd:0 8px 30px rgba(28,24,21,.08); --shd2:0 12px 38px rgba(28,24,21,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--bd);font-size:16.5px;line-height:1.68;color:var(--tx);background:
+  radial-gradient(circle at 12% 18%, rgba(27,95,151,.10), transparent 28%),
+  radial-gradient(circle at 88% 28%, rgba(17,122,116,.10), transparent 28%),
+  radial-gradient(circle at 50% 100%, rgba(198,106,18,.08), transparent 35%),
+  var(--bg);
+}
+a{color:inherit}
+.hdr{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,#fff,var(--bg2));border-bottom:1px solid var(--bdr);box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.hdr-in{max-width:1760px;margin:auto;padding:14px 28px;display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
+.brand h1{font-family:var(--hd);font-size:26px;color:var(--pri2);line-height:1.05}
+.brand small{display:block;color:var(--tx3);font-size:13px;letter-spacing:.4px}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{padding:7px 13px;border-radius:999px;font-size:13px;font-weight:800}
+.pill.pri{background:var(--priL);color:var(--pri2)} .pill.grn{background:var(--grnL);color:var(--grn2)} .pill.pur{background:var(--purL);color:var(--pur2)}
+.btn{border:none;border-radius:999px;padding:11px 18px;font-family:var(--bd);font-size:14px;font-weight:800;cursor:pointer;transition:.2s ease;background:var(--pri);color:#fff;box-shadow:0 4px 12px rgba(27,95,151,.18)}
+.btn:hover{transform:translateY(-1px);filter:brightness(.97)}
+.btn.alt{background:var(--grn)} .btn.gold{background:var(--gold);color:#20180a} .btn.pur{background:var(--pur)} .btn.ghost{background:#fff;color:var(--pri2);border:1px solid var(--bdr);box-shadow:none}
+.prog{height:4px;background:#e7dfd7}.prog > div{height:100%;width:10%;background:linear-gradient(90deg,var(--teal),var(--pri),var(--pur),var(--rose));transition:width .5s ease}
+.nav{background:#fff;border-bottom:1px solid var(--bdr);overflow-x:auto}.nav::-webkit-scrollbar{height:8px}.nav::-webkit-scrollbar-thumb{background:#d7cec4;border-radius:999px}
+.nav-in{max-width:1760px;margin:auto;display:flex;gap:6px;padding:9px 22px}
+.tab{flex-shrink:0;border:none;background:transparent;padding:11px 16px;border-radius:12px;font-family:var(--bd);font-size:14px;font-weight:700;color:var(--tx3);cursor:pointer;white-space:nowrap;transition:.2s ease}
+.tab:hover{background:var(--priL);color:var(--pri2)} .tab.a{background:linear-gradient(135deg,var(--priL),#fff);color:var(--pri2);box-shadow:inset 0 0 0 1px #cce3f8}
+main{width:min(96vw,1720px);max-width:none;margin:0 auto;padding:28px 26px 58px}
+.panel{display:none;animation:fade .35s ease}.panel.a{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.hero{position:relative;overflow:hidden;border:1px solid var(--bdr);border-radius:var(--r3);padding:34px 34px;margin-bottom:18px;box-shadow:var(--shd);background:linear-gradient(135deg,#fff,var(--bg2))}
+.hero h2{font-family:var(--hd);font-size:38px;line-height:1.05;color:var(--pri2);margin-bottom:8px}
+.hero p{max-width:980px;color:var(--tx2);font-size:17px}
+.hero.grid2{display:grid;grid-template-columns:1.25fr .75fr;gap:24px;align-items:center}
+.diagram{position:relative;min-height:190px;border-radius:24px;padding:20px;background:linear-gradient(135deg,rgba(255,255,255,.75),rgba(255,255,255,.5));border:1px solid rgba(255,255,255,.5);backdrop-filter:blur(2px)}
+.floatdot,.floatdot2,.floatdot3{position:absolute;border-radius:50%;filter:blur(1px);opacity:.8;animation:float 7s ease-in-out infinite}
+.floatdot{width:80px;height:80px;background:rgba(27,95,151,.12);right:12px;top:12px}
+.floatdot2{width:54px;height:54px;background:rgba(17,122,116,.12);left:10px;bottom:18px;animation-delay:1s}
+.floatdot3{width:40px;height:40px;background:rgba(198,106,18,.14);right:120px;bottom:22px;animation-delay:2s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.flow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.step{flex:1;min-width:140px;padding:14px;border-radius:16px;background:#fff;border:1px solid var(--bdr);font-size:14px;font-weight:700;box-shadow:0 6px 14px rgba(0,0,0,.04);position:relative}
+.step small{display:block;font-weight:600;color:var(--tx2);font-size:12px}
+.step::after{content:'→';position:absolute;right:-10px;top:50%;transform:translateY(-50%);color:var(--tx3);font-size:18px}
+.step:last-child::after{display:none}
+.bucket-strip{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.bucket{flex:1;min-width:96px;padding:12px;border-radius:16px;text-align:center;color:#1a1714;position:relative;overflow:hidden;font-weight:800;border:1px solid rgba(0,0,0,.06)}
+.bucket span{display:block;font-family:var(--mn);font-size:18px}
+.bucket small{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.bucket::before{content:'';position:absolute;inset:-40% -20%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.45),transparent);animation:shine 4.5s linear infinite}
+@keyframes shine{from{transform:translateX(-120%)}to{transform:translateX(140%)}}
+.b0{background:#dff4e6}.b1{background:#fff5c8}.b2{background:#ffe4bf}.b3{background:#ffd4c7}.b4{background:#ffd2dc}
+.outcomes,.activitybox,.call,.formula,.mini, .diagram-card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r2);padding:20px 22px;box-shadow:var(--shd);margin-bottom:16px}
+.outcomes h3,.activitybox h3,.call h3,.formula h3,.mini h3,.diagram-card h3{font-family:var(--hd);font-size:22px;color:var(--pri2);margin-bottom:8px}
+.outcomes ul,.activitybox ul{padding-left:18px} .outcomes li,.activitybox li{margin:4px 0}
+.call.green{background:linear-gradient(135deg,var(--grnL),#fff)} .call.orange{background:linear-gradient(135deg,var(--orgL),#fff)} .call.red{background:linear-gradient(135deg,var(--redL),#fff)} .call.blue{background:linear-gradient(135deg,var(--priL),#fff)} .call.purple{background:linear-gradient(135deg,var(--purL),#fff)} .call.teal{background:linear-gradient(135deg,var(--tealL),#fff)}
+.grid{display:grid;gap:16px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r2);padding:22px;box-shadow:var(--shd);margin-bottom:16px}
+.card h3{font-family:var(--hd);font-size:30px;color:var(--pri2);margin-bottom:8px}
+.card h4{font-size:18px;color:var(--tx)}
+.card p, .card li{color:var(--tx2)}
+.tblwrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:15px;border-radius:14px;overflow:hidden}
+.tbl th{background:var(--pri2);color:#fff;padding:13px 12px;font-size:12px;text-transform:uppercase;letter-spacing:.4px;text-align:left;position:sticky;top:0}
+.tbl td{padding:12px 12px;border-bottom:1px solid #e6dfd7;vertical-align:top}
+.tbl tr:nth-child(even) td{background:#fffdfb}
+.money{text-align:right;font-family:var(--mn)} .mono{font-family:var(--mn)}
+.quiz{background:#fff;border:1px solid var(--bdr);border-radius:18px;padding:20px;margin:14px 0;box-shadow:var(--shd)}
+.quiz h4{font-family:var(--hd);font-size:27px;color:var(--pri2);margin-bottom:8px;line-height:1.15}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.op{padding:14px 14px;border:2px solid #ded4ca;border-radius:14px;background:#fff;text-align:left;font-family:var(--bd);font-size:15px;line-height:1.45;cursor:pointer;transition:.18s ease}
+.op:hover{border-color:#bed9f1;background:#f9fcff}.op.x{pointer-events:none}.op.c{border-color:#8fd0a9;background:#eefbf2}.op.w{border-color:#f0b2b2;background:#fff4f4}
+.fb{display:none;margin-top:10px;padding:12px 14px;border-radius:12px;font-size:15px;line-height:1.55}.fb.c{display:block;background:var(--grnL);color:var(--grn2);border:1px solid #aadcb8}.fb.w{display:block;background:var(--redL);color:var(--red2);border:1px solid #f1b2b2}
+.flashgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.flip{perspective:1200px;min-height:440px;cursor:pointer}
+.flipin{position:relative;width:100%;height:100%;min-height:440px;transform-style:preserve-3d;transition:transform .75s ease}
+.flip.f .flipin{transform:rotateY(180deg)}
+.front,.back{position:absolute;inset:0;border-radius:24px;padding:22px;backface-visibility:hidden;box-shadow:var(--shd2);border:1px solid rgba(0,0,0,.05);overflow:hidden}
+.front{display:flex;flex-direction:column;justify-content:space-between;color:#1a1714}
+.back{transform:rotateY(180deg);display:flex;flex-direction:column;overflow:auto}
+.front h4,.back h4{font-family:var(--hd);font-size:31px;line-height:1.05;margin:6px 0 10px}
+.front p,.back p{font-size:15px;color:#2f2a25}
+.tag{display:inline-block;width:max-content;padding:6px 11px;border-radius:999px;background:rgba(255,255,255,.74);font-size:12px;font-weight:800;letter-spacing:.3px;text-transform:uppercase}
+.flashhint{margin-top:auto;padding:13px 15px;border-radius:16px;background:rgba(255,255,255,.78);font-size:17px;line-height:1.35;font-weight:700}.front .memory{font-size:20px;line-height:1.35;font-weight:800;margin:10px 0}.front .memory u{text-underline-offset:4px;text-decoration-thickness:2px}.front .keyblue{color:#063f7a}.front .keygreen{color:#075c2d}.front .keyorange{color:#9a3f00}.front .keypurple{color:#4b2388}.front .keyred{color:#8e153c}.front .keyteal{color:#005e58}.front h4{font-size:36px}.front p{font-size:17px;line-height:1.45}
+.boxline{display:grid;gap:10px;margin-top:8px}
+.fcbox{display:block;padding:13px 14px;border-radius:16px;font-size:14px;line-height:1.52;border:2px solid rgba(255,255,255,.55);background:rgba(255,255,255,.86)}
+.fcbox .fclabel{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px}
+.fcbox .fccontent{display:block;font-size:14px;color:#2a241f}
+.fcbox.know{background:#eef7ff;border-color:#b8d9ff}.fcbox.know .fclabel{background:#d6ebff;color:#0d4e92}
+.fcbox.show{background:#eefcf4;border-color:#b8ebcd}.fcbox.show .fclabel{background:#d9f7e4;color:#0f6b39}
+.fcbox.confuse{background:#fff4e9;border-color:#ffd0a9}.fcbox.confuse .fclabel{background:#ffe3ca;color:#a45100}
+.fcbox.check{background:#f5edff;border-color:#d2b8ff}.fcbox.check .fclabel{background:#e5d5ff;color:#5a2ca0}
+.fcopts{display:grid;gap:8px;margin-top:9px}.fcopt{border:2px solid #d7c5ff;background:#fff;border-radius:12px;padding:10px 11px;font-family:var(--bd);font-size:14px;font-weight:750;text-align:left;cursor:pointer;transition:.18s ease}.fcopt:hover{background:#fbf8ff;border-color:#8e5eff}.fcopt.good{background:#e7f9ee;border-color:#25a75b;color:#0b542c}.fcopt.bad{background:#fff0f0;border-color:#d24444;color:#812525}.fcfeedback{display:none;margin-top:9px;border-radius:12px;padding:10px 11px;font-size:14px;line-height:1.45;font-weight:650}.fcfeedback.good{display:block;background:#e7f9ee;color:#0b542c;border:1px solid #9ed8b5}.fcfeedback.bad{display:block;background:#fff0f0;color:#812525;border:1px solid #e7a6a6}
+.formula-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.formula .eq{font-family:var(--mn);font-size:14px;background:#fff;border:1px dashed #d6cabd;border-radius:12px;padding:10px;margin-top:8px}
+.notearea{width:100%;min-height:120px;border:1px solid var(--bdr);border-radius:16px;padding:12px;font-family:var(--bd);font-size:13px;background:#fffdfb;resize:vertical}
+.kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.kpi .box{background:#fff;border:1px solid var(--bdr);border-radius:18px;padding:16px;text-align:center;box-shadow:var(--shd)}
+.kpi .n{font-family:var(--hd);font-size:30px;color:var(--pri2)}
+.reportbox{white-space:pre-wrap;background:#fffdfb;border:1px solid var(--bdr);border-radius:18px;padding:16px;min-height:280px;font-size:13px;line-height:1.6;box-shadow:var(--shd)}
+.copyok{display:none;color:var(--grn2);font-size:12px;font-weight:700}
+.footerline{font-size:11px;color:var(--tx3);text-align:center;padding-top:8px}
+
+
+/* Bright report visual and checklist inspection */
+.report-visual{border-radius:28px;overflow:hidden;border:1px solid rgba(0,0,0,.08);box-shadow:var(--shd2);background:#fff;margin:16px 0}
+.report-title{background:linear-gradient(135deg,#0f4e8a,#22a08f);color:#fff;padding:16px 18px;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.report-title h3{font-family:var(--hd);font-size:26px;margin:0;color:#fff}
+.report-title span{font-size:12px;background:rgba(255,255,255,.18);padding:6px 10px;border-radius:999px;font-weight:800}
+.color-report{width:100%;border-collapse:separate;border-spacing:0;font-size:15px}
+.color-report th{padding:14px 13px;color:#fff;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.45px;background:#123d60}
+.color-report td{padding:13px;border-bottom:1px solid rgba(255,255,255,.4);font-weight:650;color:#1d1713}
+.color-report .money{text-align:right;font-family:var(--mn)}
+.color-report .r-current td{background:#bcf2d0}.color-report .r-31 td{background:#fff16a}.color-report .r-61 td{background:#ffc15e}.color-report .r-91 td{background:#ff8a62}.color-report .r-120 td{background:#ff6384;color:#2b0811}
+.color-report tr:hover td{filter:saturate(1.18) brightness(1.02)}
+.inspect{background:linear-gradient(135deg,#ffffff,#fff8ed);border:1px solid var(--bdr);border-radius:26px;padding:18px;box-shadow:var(--shd);margin:18px 0}
+.inspect h3{font-family:var(--hd);font-size:25px;color:var(--pri2);margin-bottom:6px}
+.checkgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.checkitem{display:flex;gap:9px;align-items:flex-start;background:#fff;border:2px solid #e5dbd0;border-radius:16px;padding:12px;cursor:pointer;font-size:13px;line-height:1.35;transition:.18s ease;min-height:60px}
+.checkitem:hover{border-color:#8dc8f3;transform:translateY(-1px)}
+.checkitem input{margin-top:3px;transform:scale(1.15)}
+.checkitem b{display:block;color:var(--tx);font-size:13px}.checkitem small{display:block;color:var(--tx2);font-size:11px;margin-top:2px}
+.inspect-result{display:none;margin-top:12px;border-radius:18px;padding:14px;background:#f7fbff;border:1px solid #cbe3f7;font-size:13px}
+.inspect-result.show{display:block}
+.inspect-result .good{color:var(--grn2);font-weight:800}.inspect-result .bad{color:var(--red2);font-weight:800}
+.inspect-explain{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.inspect-explain .ans{padding:10px 12px;border-radius:14px;background:#fff;border:1px solid #d9e7f5;font-size:12px;line-height:1.45}
+.inspect-explain .ans b{display:block;margin-bottom:3px}.inspect-explain .yes{border-left:5px solid var(--grn);}.inspect-explain .no{border-left:5px solid var(--red);}
+@media(max-width:640px){.inspect-explain{grid-template-columns:1fr}}
+
+.comparegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.comparecard{border-radius:20px;padding:15px;border:1px solid rgba(0,0,0,.08);box-shadow:0 5px 14px rgba(0,0,0,.045)}
+.comparecard h4{font-family:var(--hd);font-size:22px;margin-bottom:5px;color:#201713}.comparecard p{font-size:13px;color:#312b25}
+.comparecard.blue{background:#c7e8ff}.comparecard.green{background:#c5f5d3}.comparecard.orange{background:#ffd08a}.comparecard.pink{background:#ffb2cf}.comparecard.purple{background:#d8c2ff}.comparecard.yellow{background:#fff36d}
+
+
+@media(min-width:1400px){.flashgrid{grid-template-columns:repeat(4,minmax(0,1fr))}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.opts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1650px){.hero h2{font-size:42px}.diagram{min-height:210px}.flip{min-height:460px}.flipin{min-height:460px}}
+@media(max-width:980px){.flashgrid,.grid.two,.grid.three,.formula-grid,.kpi,.checkgrid,.comparegrid{grid-template-columns:1fr 1fr}.hero.grid2{grid-template-columns:1fr}.opts{grid-template-columns:1fr}.flow .step::after{display:none}}
+@media(max-width:640px){main{width:100%;padding:16px 10px 40px}.flashgrid,.grid.two,.grid.three,.formula-grid,.kpi,.checkgrid,.comparegrid{grid-template-columns:1fr}.hero h2{font-size:24px}.brand h1{font-size:18px}.tools{width:100%}.btn{padding:8px 12px;font-size:11px}}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-in">
+    <div class="brand">
+      <h1>CBCS Aging Reports, A/R, A/P & Billing Tools Mastery Lab</h1>
+      <small>Interactive lesson · practice · challenge · report</small>
+    </div>
+    <div class="tools">
+      <div class="pill pri">Score: <span id="score">0</span></div>
+      <div class="pill grn">Correct: <span id="correct">0</span></div>
+      <div class="pill pur">Answered: <span id="answered">0</span></div>
+      <button class="btn ghost" onclick="printPacket()">Print / Save PDF</button>
+      <button class="btn gold" onclick="showTab(9);buildReport()">Generate Report</button>
+    </div>
+  </div>
+  <div class="prog"><div id="prog"></div></div>
+</header>
+<nav class="nav"><div class="nav-in" id="tabs"></div></nav>
+<main>
+
+<section class="panel a" id="p0">
+  <div class="hero grid2" style="background:linear-gradient(135deg,#f7fbff,#fff8ef 55%,#edf9f8)">
+    <div>
+      <h2>Start Here</h2>
+      <p>This study lab helps you recognize <b>aging reports</b>, explain <b>accounts receivable</b> and <b>accounts payable</b>, identify <b>billing tools and forms</b>, calculate <b>balances and aging buckets</b>, and practice the types of choices often seen on the CBCS test.</p>
+      <div class="flow">
+        <div class="step">Learn<small>Read examples and diagrams</small></div>
+        <div class="step">Practice<small>Answer recognition questions</small></div>
+        <div class="step">Apply<small>Read realistic reports</small></div>
+        <div class="step">Produce<small>Explain your reasoning</small></div>
+      </div>
+    </div>
+    <div class="diagram">
+      <div class="floatdot"></div><div class="floatdot2"></div><div class="floatdot3"></div>
+      <h3 style="font-family:var(--hd);font-size:22px;color:var(--pri2)">Aging Bucket Snapshot</h3>
+      <div class="bucket-strip">
+        <div class="bucket b0"><span>0–30</span><small>Current</small></div>
+        <div class="bucket b1"><span>31–60</span><small>Follow up</small></div>
+        <div class="bucket b2"><span>61–90</span><small>Overdue</small></div>
+        <div class="bucket b3"><span>91–120</span><small>Urgent</small></div>
+        <div class="bucket b4"><span>120+</span><small>High risk</small></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid two">
+    <div class="outcomes">
+      <h3>Learning Outcomes</h3>
+      <ul>
+        <li>Recognize what an insurance aging report shows and what it does not show.</li>
+        <li>Separate A/R from A/P using quick test-ready language.</li>
+        <li>Identify day sheet, patient ledger, encounter form, superbill, and CMS-1500.</li>
+        <li>Calculate remaining balance, total A/R, and correct aging bucket.</li>
+        <li>Prioritize which claims should be worked first and explain why.</li>
+      </ul>
+    </div>
+    <div class="activitybox">
+      <h3>What You Will Produce</h3>
+      <ul>
+        <li>Correct answers with rationales across practice sections.</li>
+        <li>A short written follow-up note in the activity section.</li>
+        <li>A final student report that summarizes your score and section performance.</li>
+        <li>A PDF packet if you print or save the lesson for study review.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="call blue">
+    <h3>How to Study This Efficiently</h3>
+    <p>Start with the flashcards. Then move into recognition questions. After that, work the realistic aging reports and formulas. Finish with the challenge mode and the student report.</p>
+  </div>
+</section>
+
+<section class="panel" id="p1">
+  <div class="hero grid2" style="background:linear-gradient(135deg,#eef7ff,#fff7ea 58%,#f1ecff)">
+    <div>
+      <h2>Color Flashcards</h2>
+      <p>Study each card, notice the highlighted clue words, then flip to check the full explanation and common confusion.</p>
+    </div>
+    <div class="diagram">
+      <div class="floatdot"></div><div class="floatdot2"></div><div class="floatdot3"></div>
+      <h3 style="font-family:var(--hd);font-size:22px;color:var(--pri2)">Flashcard Strategy</h3>
+      <div class="flow" style="margin-top:14px">
+        <div class="step">Recognize<small>Name the tool or term</small></div>
+        <div class="step">Describe<small>Say what it shows</small></div>
+        <div class="step">Compare<small>Separate it from look-alikes</small></div>
+      </div>
+    </div>
+  </div>
+  <div class="outcomes"><h3>Learning Outcome</h3><p>By the end of this page, you should be able to explain each core billing term in one clean sentence and avoid common mix-ups.</p></div>
+  <div class="flashgrid" id="flashcards"></div>
+</section>
+
+<section class="panel" id="p2">
+  <div class="hero grid2" style="background:linear-gradient(135deg,#e9f9f2,#fffdf4 55%,#eef7ff)">
+    <div>
+      <h2>Aging Reports</h2>
+      <p>An <b>insurance aging report</b> organizes outstanding payer balances by how long they have been unpaid. It helps the biller identify claims outstanding from third-party payers and decide which claims need follow-up first.</p>
+    </div>
+    <div class="diagram">
+      <div class="floatdot"></div><div class="floatdot2"></div><div class="floatdot3"></div>
+      <h3 style="font-family:var(--hd);font-size:22px;color:var(--grn2)">What It Shows</h3>
+      <div class="bucket-strip">
+        <div class="bucket b0"><span>Payer</span><small>who owes</small></div>
+        <div class="bucket b1"><span>Balance</span><small>how much</small></div>
+        <div class="bucket b2"><span>Days</span><small>how old</small></div>
+        <div class="bucket b3"><span>Bucket</span><small>time range</small></div>
+      </div>
+    </div>
+  </div>
+  <div class="report-visual">
+    <div class="report-title"><h3>Sample Insurance Aging Report</h3><span>Look first. Then check what you can actually find.</span></div>
+    <div class="tblwrap">
+      <table class="color-report">
+        <tr><th>Patient</th><th>Payer</th><th>Claim #</th><th>DOS</th><th>Billed Date</th><th>Charge</th><th>Paid</th><th>Balance</th><th>Days</th><th>Bucket</th><th>Status</th></tr>
+        <tr class="r-current"><td>Allen, J.</td><td>Aetna</td><td class="mono">CLM-2201</td><td>04/18/26</td><td>04/20/26</td><td class="money">$180</td><td class="money">$0</td><td class="money">$180</td><td>18</td><td>0–30</td><td>Processing</td></tr>
+        <tr class="r-31"><td>Brown, T.</td><td>BCBS</td><td class="mono">CLM-2188</td><td>03/23/26</td><td>03/25/26</td><td class="money">$420</td><td class="money">$0</td><td class="money">$420</td><td>44</td><td>31–60</td><td>Follow up</td></tr>
+        <tr class="r-61"><td>Chen, L.</td><td>UHC</td><td class="mono">CLM-2114</td><td>02/20/26</td><td>02/22/26</td><td class="money">$650</td><td class="money">$200</td><td class="money">$450</td><td>75</td><td>61–90</td><td>Partial pay</td></tr>
+        <tr class="r-91"><td>Davis, R.</td><td>Cigna</td><td class="mono">CLM-2072</td><td>01/18/26</td><td>01/20/26</td><td class="money">$310</td><td class="money">$0</td><td class="money">$310</td><td>108</td><td>91–120</td><td>Denied</td></tr>
+        <tr class="r-120"><td>Evans, T.</td><td>Medicare</td><td class="mono">CLM-1987</td><td>12/05/25</td><td>12/07/25</td><td class="money">$890</td><td class="money">$0</td><td class="money">$890</td><td>152</td><td>120+</td><td>High risk</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="inspect">
+    <h3>Inspection Activity: What Can You Find on This Aging Report?</h3>
+    <p>Check every item you can actually find in the report above. Some choices sound related to billing, but they do not belong on an aging report.</p>
+    <div class="checkgrid" id="agingChecklist">
+      <label class="checkitem"><input type="checkbox" value="yes"><span><b>Patient name</b></span></label>
+      <label class="checkitem"><input type="checkbox" value="yes"><span><b>Third-party payer</b></span></label>
+      <label class="checkitem"><input type="checkbox" value="yes"><span><b>Claim number</b></span></label>
+      <label class="checkitem"><input type="checkbox" value="yes"><span><b>Date of service and billed date</b></span></label>
+      <label class="checkitem"><input type="checkbox" value="yes"><span><b>Charge, paid amount, and balance</b></span></label>
+      <label class="checkitem"><input type="checkbox" value="yes"><span><b>Days outstanding and age bucket</b></span></label>
+      <label class="checkitem"><input type="checkbox" value="no"><span><b>Upcoming missed appointments</b></span></label>
+      <label class="checkitem"><input type="checkbox" value="no"><span><b>Full clinical progress note</b></span></label>
+      <label class="checkitem"><input type="checkbox" value="no"><span><b>Every completed payer payment</b></span></label>
+      <label class="checkitem"><input type="checkbox" value="no"><span><b>Office rent and vendor bills</b></span></label>
+    </div>
+    <button class="btn alt" onclick="checkInspection()">Check My Selections</button>
+    <div class="inspect-result" id="inspectResult"></div>
+  </div>
+
+  <div class="comparegrid">
+    <div class="comparecard blue"><h4>Aging Report</h4><p>Shows unpaid balances organized by how long they have been outstanding. It helps identify claims that need follow-up.</p></div>
+    <div class="comparecard green"><h4>Payment Report</h4><p>Shows payments received and posted, such as check/EFT amounts, payment dates, and payer remittance information.</p></div>
+    <div class="comparecard orange"><h4>Appointment Report</h4><p>Shows scheduled visits, arrival status, missed appointments, cancellations, and provider schedule information.</p></div>
+    <div class="comparecard pink"><h4>Patient Ledger</h4><p>Shows one patient’s account history: charges, payments, adjustments, and current balance over time.</p></div>
+    <div class="comparecard purple"><h4>EOB</h4><p>Explains how a payer processed one claim: allowed amount, paid amount, denial, adjustment, and patient responsibility.</p></div>
+    <div class="comparecard yellow"><h4>A/P Report</h4><p>Shows money the practice owes to outside parties, such as vendors, rent, equipment, or supply invoices.</p></div>
+  </div>
+
+  <div class="activitybox"><h3>Student Activity</h3><p>After checking the report, say this out loud: “An aging report shows outstanding balances, not appointments, full clinical notes, or all completed payments.” Then answer the practice questions.</p></div>
+  <div id="quiz-aging"></div>
+</section>
+
+<section class="panel" id="p3">
+  <div class="hero grid2" style="background:linear-gradient(135deg,#fff4e8,#edf7ff 55%,#eef9f3)">
+    <div>
+      <h2>A/R and A/P</h2>
+      <p>Students often confuse these because the abbreviations look similar. Keep the direction of the money clear.</p>
+    </div>
+    <div class="diagram">
+      <div class="floatdot"></div><div class="floatdot2"></div><div class="floatdot3"></div>
+      <div class="flow" style="margin-top:20px">
+        <div class="step">A/R<small>Money owed to the provider</small></div>
+        <div class="step">A/P<small>Money owed by the practice</small></div>
+      </div>
+    </div>
+  </div>
+  <div class="grid two">
+    <div class="card" style="background:linear-gradient(135deg,var(--priL),#fff)"><h3>Accounts Receivable</h3><p><b>Money owed to the provider.</b> This includes unpaid insurance claims and patient balances for services already rendered.</p><p><b>Memory cue:</b> the practice should <b>receive</b> this money.</p></div>
+    <div class="card" style="background:linear-gradient(135deg,var(--orgL),#fff)"><h3>Accounts Payable</h3><p><b>Money owed by the practice.</b> This includes rent, vendor invoices, equipment bills, supply charges, and office services.</p><p><b>Memory cue:</b> the practice must <b>pay</b> this money.</p></div>
+  </div>
+  <div class="outcomes"><h3>Learning Outcome</h3><p>By the end of this page, you should be able to sort examples into A/R or A/P and explain your choice using one sentence.</p></div>
+  <div id="quiz-arap"></div>
+</section>
+
+<section class="panel" id="p4">
+  <div class="hero grid2" style="background:linear-gradient(135deg,#f1ecff,#eef7ff 55%,#fff6e9)">
+    <div>
+      <h2>Forms and Records</h2>
+      <p>These are high-value recognition items: <b>day sheet</b>, <b>patient ledger</b>, <b>encounter form</b>, <b>superbill</b>, and <b>CMS-1500</b>. CBCS questions often ask what each record is used for.</p>
+    </div>
+    <div class="diagram">
+      <div class="floatdot"></div><div class="floatdot2"></div><div class="floatdot3"></div>
+      <div class="flow" style="margin-top:16px">
+        <div class="step">Encounter / Superbill<small>services rendered</small></div>
+        <div class="step">CMS-1500<small>submit charges</small></div>
+        <div class="step">Ledger<small>one patient account</small></div>
+        <div class="step">Day Sheet<small>daily transactions</small></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Recognition Table</h3>
+    <div class="tblwrap">
+      <table class="tbl">
+        <tr><th>Tool / Record</th><th>Use</th><th>Fast Test Clue</th></tr>
+        <tr><td>Day sheet / A/R journal</td><td>Chronological summary of transactions posted for the day.</td><td>Daily posting summary.</td></tr>
+        <tr><td>Patient ledger</td><td>Individual patient account record showing charges, payments, adjustments, and balance.</td><td>One patient account history.</td></tr>
+        <tr><td>CMS-1500</td><td>Claim form used to submit professional charges to a third-party payer.</td><td>Insurance billing form.</td></tr>
+        <tr><td>Encounter form / superbill</td><td>Visit-based record of diagnoses, procedures, services rendered, and charges.</td><td>Visit documentation and coding clue sheet.</td></tr>
+        <tr><td>EOB</td><td>Explains how the payer processed a claim and what amount remains.</td><td>Review before billing the patient.</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="activitybox"><h3>Student Activity</h3><ul><li>Say which record is about one patient only.</li><li>Say which record is submitted to a third-party payer.</li><li>Say which record summarizes daily transactions.</li></ul></div>
+  <div id="quiz-forms"></div>
+</section>
+
+<section class="panel" id="p5">
+  <div class="hero grid2" style="background:linear-gradient(135deg,#eef9f3,#fff8ef 52%,#eef7ff)">
+    <div>
+      <h2>Test-Style Aging Report Examples</h2>
+      <p>The CBCS exam may show a small report or ask what kind of information a report would contain. Study the examples below as if they were items from a test.</p>
+    </div>
+    <div class="diagram">
+      <div class="floatdot"></div><div class="floatdot2"></div><div class="floatdot3"></div>
+      <h3 style="font-family:var(--hd);font-size:22px;color:var(--teal2)">How to Read Fast</h3>
+      <div class="flow" style="margin-top:14px">
+        <div class="step">1. Oldest<small>Look for highest age</small></div>
+        <div class="step">2. Largest<small>Check highest balance</small></div>
+        <div class="step">3. Status<small>See paid, denied, or open</small></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Example 1: Insurance Aging Report</h3>
+    <p style="color:var(--tx2);margin-bottom:10px">The colored rows below bring back the bucket visual: green is current, yellow needs follow-up, orange is overdue, red is urgent, and pink is severe risk.</p>
+    <div class="tblwrap">
+      <table class="tbl">
+        <tr><th>Patient</th><th>Payer</th><th>Claim #</th><th>DOS</th><th>Billed</th><th>Charge</th><th>Paid</th><th>Adjust</th><th>Balance</th><th>Days</th><th>Bucket</th><th>Status</th></tr>
+        <tr><td>Patel, R.</td><td>Aetna</td><td class="mono">CLM-1042</td><td>01/14/26</td><td>01/16/26</td><td class="money">$920</td><td class="money">$0</td><td class="money">$0</td><td class="money">$920</td><td>154</td><td>120+</td><td>Unworked</td></tr>
+        <tr><td>Rivera, A.</td><td>BCBS</td><td class="mono">CLM-1071</td><td>05/01/26</td><td>05/03/26</td><td class="money">$240</td><td class="money">$0</td><td class="money">$0</td><td class="money">$240</td><td>16</td><td>0–30</td><td>Current</td></tr>
+        <tr><td>Kim, L.</td><td>UHC</td><td class="mono">CLM-1088</td><td>03/08/26</td><td>03/10/26</td><td class="money">$610</td><td class="money">$260</td><td class="money">$0</td><td class="money">$350</td><td>70</td><td>61–90</td><td>Partial pay</td></tr>
+        <tr><td>Lopez, M.</td><td>Cigna</td><td class="mono">CLM-0992</td><td>02/18/26</td><td>02/20/26</td><td class="money">$315</td><td class="money">$0</td><td class="money">$0</td><td class="money">$315</td><td>89</td><td>61–90</td><td>Open</td></tr>
+        <tr><td>Santos, P.</td><td>Medicare</td><td class="mono">CLM-0934</td><td>12/20/25</td><td>12/22/25</td><td class="money">$480</td><td class="money">$0</td><td class="money">$0</td><td class="money">$480</td><td>179</td><td>120+</td><td>Rejected</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid two">
+    <div class="card">
+      <h3>Example 2: Patient Aging Report</h3>
+      <div class="tblwrap">
+        <table class="tbl">
+          <tr><th>Patient</th><th>Current</th><th>31–60</th><th>61–90</th><th>91+</th><th>Total Due</th></tr>
+          <tr><td>Allen, J.</td><td class="money">$20</td><td class="money">$0</td><td class="money">$0</td><td class="money">$0</td><td class="money">$20</td></tr>
+          <tr><td>Brown, T.</td><td class="money">$0</td><td class="money">$55</td><td class="money">$0</td><td class="money">$0</td><td class="money">$55</td></tr>
+          <tr><td>Foster, E.</td><td class="money">$0</td><td class="money">$0</td><td class="money">$95</td><td class="money">$40</td><td class="money">$135</td></tr>
+        </table>
+      </div>
+      <p style="margin-top:8px">This version focuses on patient responsibility rather than third-party payer claims.</p>
+    </div>
+    <div class="card">
+      <h3>Example 3: Rejection / Denial Worklist</h3>
+      <div class="tblwrap">
+        <table class="tbl">
+          <tr><th>Payer</th><th>Claim #</th><th>Reason</th><th>Received</th><th>Action</th></tr>
+          <tr><td>Aetna</td><td class="mono">RJ-5502</td><td>Missing modifier</td><td>05/02/26</td><td>Correct and resubmit</td></tr>
+          <tr><td>BCBS</td><td class="mono">RJ-5519</td><td>Member ID error</td><td>05/05/26</td><td>Verify ID and resubmit</td></tr>
+          <tr><td>Medicare</td><td class="mono">RJ-5541</td><td>Invalid NPI</td><td>05/06/26</td><td>Correct billing provider</td></tr>
+        </table>
+      </div>
+      <p style="margin-top:8px">If a question asks for <b>rejected claims organized by payer</b>, this kind of worklist is the best match.</p>
+    </div>
+  </div>
+
+  <div class="outcomes"><h3>Learning Outcome</h3><p>By the end of this page, you should be able to identify what type of report you are looking at and decide which balance or claim needs follow-up first.</p></div>
+  <div id="quiz-report"></div>
+</section>
+
+<section class="panel" id="p6">
+  <div class="hero grid2" style="background:linear-gradient(135deg,#fff8e8,#eef7ff 55%,#f3edff)">
+    <div>
+      <h2>Formulas and Calculations</h2>
+      <p>Some CBCS questions ask you to calculate a remaining balance, total A/R, or proper aging bucket. Keep the formulas simple and repeat them until they feel automatic.</p>
+    </div>
+    <div class="diagram">
+      <div class="floatdot"></div><div class="floatdot2"></div><div class="floatdot3"></div>
+      <div class="flow" style="margin-top:18px">
+        <div class="step">Charge<small>total billed amount</small></div>
+        <div class="step">− Payment<small>amount paid</small></div>
+        <div class="step">− Adjustment<small>amount adjusted off</small></div>
+        <div class="step">= Balance<small>still owed</small></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="formula-grid">
+    <div class="formula">
+      <h3>Balance Formula</h3>
+      <p>Use this when you are given charge, payment, and adjustment.</p>
+      <div class="eq">Remaining balance = Charge − Payment − Adjustment</div>
+      <p style="margin-top:8px">Example: 700 − 300 − 100 = 300</p>
+    </div>
+    <div class="formula">
+      <h3>Total A/R Formula</h3>
+      <p>Use this when you add all outstanding balances owed to the practice.</p>
+      <div class="eq">Total A/R = Sum of all unpaid payer and patient balances</div>
+      <p style="margin-top:8px">Example: 900 + 350 + 250 = 1,500</p>
+    </div>
+    <div class="formula">
+      <h3>Aging Bucket Logic</h3>
+      <p>Use days outstanding to place the claim in the correct range.</p>
+      <div class="eq">0–30, 31–60, 61–90, 91–120, 120+</div>
+      <p style="margin-top:8px">Example: 50 days = 31–60</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Worked Example</h3>
+    <p><b>Question:</b> A claim shows $640 charged, $190 paid, and $50 adjusted. What is the remaining balance?</p>
+    <p><b>Work:</b> 640 − 190 − 50 = 400</p>
+    <p><b>Answer:</b> The remaining balance is <b>$400</b>.</p>
+  </div>
+
+  <div class="activitybox"><h3>Student Activity</h3><ul><li>Say the balance formula without looking.</li><li>Add the unpaid balances in the examples to practice total A/R.</li><li>Place 22 days, 48 days, 84 days, and 130 days in the correct buckets.</li></ul></div>
+  <div id="quiz-calc"></div>
+</section>
+
+<section class="panel" id="p7">
+  <div class="hero grid2" style="background:linear-gradient(135deg,#eef7ff,#fff7f0 55%,#eef9f4)">
+    <div>
+      <h2>Student Activities</h2>
+      <p>Now use the content actively. These tasks help you move from recognition into production.</p>
+    </div>
+    <div class="diagram">
+      <div class="floatdot"></div><div class="floatdot2"></div><div class="floatdot3"></div>
+      <div class="flow" style="margin-top:18px">
+        <div class="step">Observe<small>read the case</small></div>
+        <div class="step">Decide<small>choose the best action</small></div>
+        <div class="step">Explain<small>write a short note</small></div>
+      </div>
+    </div>
+  </div>
+  <div class="grid two">
+    <div class="card">
+      <h3>Mini Scenario 1</h3>
+      <p>A claim to UHC is 83 days old. The charge was $650, $200 was paid, and $450 remains. Before billing the patient, what should you review first?</p>
+      <div class="call blue" style="margin-top:10px"><p><b>Best thinking:</b> Review the EOB first so you know whether the remaining amount is patient responsibility, a denial, a contractual adjustment, or a secondary payer balance.</p></div>
+    </div>
+    <div class="card">
+      <h3>Mini Scenario 2</h3>
+      <p>A denial worklist shows “member ID error” for a BCBS claim. What is the most reasonable next step?</p>
+      <div class="call orange" style="margin-top:10px"><p><b>Best thinking:</b> Verify the member ID, correct the claim data, and resubmit the claim.</p></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Write a Short Follow-Up Note</h3>
+    <p>Prompt: You called the payer about a 129-day-old claim. The representative said the claim was denied because the patient was not eligible on the date of service. Write a short follow-up note describing what happened and what should happen next.</p>
+    <textarea class="notearea" placeholder="Example starter: Called payer regarding claim..."></textarea>
+  </div>
+  <div class="outcomes"><h3>Learning Outcome</h3><p>By the end of this page, you should be able to explain a follow-up step in complete billing language, not just choose a letter answer.</p></div>
+  <div id="quiz-activity"></div>
+</section>
+
+<section class="panel" id="p8">
+  <div class="hero grid2" style="background:linear-gradient(135deg,#f3edff,#eef7ff 55%,#fff7ea)">
+    <div>
+      <h2>Challenge Mode</h2>
+      <p>Answer quickly but carefully. This mixed set checks recognition, application, and simple critical thinking.</p>
+    </div>
+    <div class="diagram">
+      <div class="floatdot"></div><div class="floatdot2"></div><div class="floatdot3"></div>
+      <h3 style="font-family:var(--hd);font-size:24px;color:var(--pur2);text-align:center;margin-top:16px">Timed Review</h3>
+      <div id="timer" style="font-family:var(--mn);font-size:36px;text-align:center;color:var(--pur2);margin-top:8px">02:00</div>
+      <div style="text-align:center;margin-top:14px"><button class="btn pur" onclick="startChallenge()" id="startChallengeBtn">Start Challenge</button></div>
+    </div>
+  </div>
+  <div class="outcomes"><h3>Learning Outcome</h3><p>By the end of this page, you should be able to answer mixed billing questions without relying on a single clue or keyword.</p></div>
+  <div id="challengeArea"></div>
+</section>
+
+<section class="panel" id="p9">
+  <div class="hero grid2" style="background:linear-gradient(135deg,#eef9f4,#eef7ff 52%,#fff8ea)">
+    <div>
+      <h2>Student Report</h2>
+      <p>Generate your report at any time. The summary shows your current score and section performance. You can copy it for your own notes.</p>
+    </div>
+    <div class="diagram">
+      <div class="floatdot"></div><div class="floatdot2"></div><div class="floatdot3"></div>
+      <div class="flow" style="margin-top:20px">
+        <div class="step">Generate<small>build the report</small></div>
+        <div class="step">Review<small>see strong and weak areas</small></div>
+        <div class="step">Copy<small>save your summary</small></div>
+      </div>
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="box"><div class="n" id="kpiScore">0</div><div>Points</div></div>
+    <div class="box"><div class="n" id="kpiAnswered">0</div><div>Answered</div></div>
+    <div class="box"><div class="n" id="kpiCorrect">0</div><div>Correct</div></div>
+    <div class="box"><div class="n" id="kpiPercent">0%</div><div>Accuracy</div></div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+    <button class="btn gold" onclick="buildReport()">Generate Report</button>
+    <button class="btn alt" onclick="copyReport()">Copy Report</button>
+    <span class="copyok" id="copyok">Copied.</span>
+  </div>
+  <div class="reportbox" id="report">Press “Generate Report” after you complete some questions.</div>
+  <div class="footerline">Tip: You can also use Print / Save PDF at the top to keep a study copy.</div>
+</section>
+
+</main>
+
+<script>
+const panels=['Start','Flashcards','Aging Reports','A/R vs A/P','Forms','Test Reports','Formulas','Activities','Challenge','Report'];
+const tabs=document.getElementById('tabs');
+panels.forEach((p,i)=>{const b=document.createElement('button');b.className='tab'+(i===0?' a':'');b.textContent=(i+1)+'. '+p;b.onclick=()=>showTab(i);tabs.appendChild(b)});
+function showTab(i){document.querySelectorAll('.panel').forEach((p,n)=>p.classList.toggle('a',n===i));document.querySelectorAll('.tab').forEach((b,n)=>b.classList.toggle('a',n===i));document.getElementById('prog').style.width=((i+1)/panels.length*100)+'%';window.scrollTo({top:0,behavior:'smooth'})}
+function printPacket(){document.querySelectorAll('.fb').forEach(f=>{if(!f.textContent)f.textContent='Complete the question to view the rationale here.'});window.print()}
+
+const state={score:0,answered:0,correct:0,byCat:{},challengeAnswered:false,challengeCorrect:0};
+const scoreEl=document.getElementById('score');
+const correctEl=document.getElementById('correct');
+const answeredEl=document.getElementById('answered');
+const copyokEl=document.getElementById('copyok');
+function update(){
+  scoreEl.textContent=state.score; correctEl.textContent=state.correct; answeredEl.textContent=state.answered;
+  document.getElementById('kpiScore').textContent=state.score;
+  document.getElementById('kpiAnswered').textContent=state.answered;
+  document.getElementById('kpiCorrect').textContent=state.correct;
+  const pct=state.answered?Math.round((state.correct/state.answered)*100):0;
+  document.getElementById('kpiPercent').textContent=pct+'%';
+}
+function answer(btn,ok,qid,rat,cat){
+  const quiz=btn.closest('.quiz');
+  if(quiz.dataset.done) return;
+  quiz.dataset.done='1';
+  quiz.querySelectorAll('.op').forEach(o=>o.classList.add('x'));
+  const fb=document.getElementById(qid+'fb');
+  state.answered++; state.byCat[cat]??={a:0,c:0}; state.byCat[cat].a++;
+  if(ok){btn.classList.add('c'); fb.className='fb c'; fb.textContent='Correct. '+rat; state.correct++; state.score+=10; state.byCat[cat].c++;}
+  else{btn.classList.add('w'); fb.className='fb w'; fb.textContent='Not yet. '+rat;}
+  update();
+}
+const balancedPositions=[2,0,3,1,1,3,0,2,3,1,0,2,1,3,2,0];
+function balancedChoices(q,i,cat){
+  const items=q.o.map((text,j)=>({text,ok:j===q.a}));
+  const correct=items.find(x=>x.ok);
+  const distractors=items.filter(x=>!x.ok);
+  const spin=(cat.length+i*2)%Math.max(1,distractors.length);
+  const rotated=distractors.slice(spin).concat(distractors.slice(0,spin));
+  const target=balancedPositions[(cat.length+i)%balancedPositions.length] % items.length;
+  const arranged=rotated.slice(0,items.length-1);
+  arranged.splice(target,0,correct);
+  return arranged;
+}
+function qwrap(q,i,cat){
+  const id=cat.replace(/\s+/g,'')+i;
+  let html=`<div class="quiz" id="${id}"><h4>${q.q}</h4><div class="opts">`;
+  balancedChoices(q,i,cat).forEach(item=>{html+=`<button class="op" onclick="answer(this,${item.ok},'${id}','${q.r.replace(/'/g,'&#39;')}','${cat}')">${item.text}</button>`});
+  html+=`</div><div class="fb" id="${id}fb"></div></div>`;
+  return html;
+}
+function render(id,cat,arr){document.getElementById(id).innerHTML=arr.map((q,i)=>qwrap(q,i,cat)).join('')}
+
+const aging=[
+{q:'What is the main purpose of an insurance aging report?',o:['It lists unpaid payer claims by how long they remain outstanding.','It lists upcoming patient visits by how soon they are scheduled.','It lists completed payments by how much each payer already paid.','It lists provider diagnoses by how serious each condition looks.'],a:0,r:'The aging report is used to identify unpaid claims and organize them by age for follow-up.'},
+{q:'Which item would normally appear on an insurance aging report?',o:['Payer name, balance amount, days outstanding, and age bucket.','Room assignment, appointment reminder, visit status, and provider.','Full progress note, treatment plan, diagnosis story, and vitals.','Vendor invoice, office rent, supply order, and utility charge.'],a:0,r:'Aging reports show unpaid balance information, not scheduling or full clinical details.'},
+{q:'Which statement about aging reports is incorrect?',o:['They can predict future missed appointments for office scheduling.','They can group unpaid claims by age for follow-up priority.','They can show which payer balances remain outstanding.','They can help staff focus on older unpaid claims first.'],a:0,r:'Missed appointments are handled in scheduling systems, not aging reports.'},
+{q:'Which phrase best matches a test clue about third-party balances?',o:['Claims outstanding from third-party payers on an aging report.','Daily services rendered on the encounter form at check-out.','Transactions posted in order on the day sheet each day.','Charges and payments shown for one patient on a ledger.'],a:0,r:'“Claims outstanding from third-party payers” points directly to an aging report.'},
+{q:'Why is a 120+ claim usually a serious concern?',o:['It carries a high collection risk and requires urgent follow-up.','It stays within routine processing and should wait quietly.','It means the claim is complete and needs no further work.','It proves the patient has another visit scheduled very soon.'],a:0,r:'Old claims risk missed filing deadlines and lower collection success.'},
+{q:'Which report would best show payments already received and posted?',o:['Payment report showing payer deposits, dates, and posted amounts.','Aging report showing unpaid balances by outstanding days.','Appointment report showing arrival status and cancelled visits.','A/P report showing vendor bills owed by the practice.'],a:0,r:'Payment reports show money already received; aging reports focus on unpaid balances.'},
+{q:'Which report would best show no-shows and upcoming missed visits?',o:['Appointment report showing scheduled, cancelled, and missed visits.','Aging report showing payer balances by days outstanding.','Patient ledger showing charges and payments for one account.','EOB showing how one payer processed one claim.'],a:0,r:'No-shows and visit status belong to scheduling or appointment reports.'},
+{q:'A test answer says “determines what the payer has paid.” Why is that tricky?',o:['It sounds financial, but payment reports and EOBs show payments best.','It sounds clinical, but appointment reports show payments best.','It sounds correct because aging reports replace all payer EOBs.','It sounds correct because unpaid claims are the same as payments.'],a:0,r:'Aging reports may include a paid column, but their purpose is outstanding balances, not a complete payer payment report.'},
+{q:'What is the strongest clue that the report is an aging report?',o:['It organizes unpaid balances by days outstanding and age bucket.','It organizes scheduled patients by room number and provider.','It organizes completed payments by check number and deposit date.','It organizes office invoices by vendor name and due date.'],a:0,r:'Days outstanding and age bucket are the strongest aging-report clues.'}
+];
+const arap=[
+{q:'Which example shows accounts receivable for a practice?',o:['A payer still owes $420 for services already rendered today.','A vendor bills $420 for exam table paper and office supplies.','A landlord requests $420 for the monthly office rent balance.','A service company bills $420 for copier repair and delivery.'],a:0,r:'A/R is money owed to the provider for services already provided.'},
+{q:'Which example shows accounts payable for a practice?',o:['The practice owes a vendor for gloves, paper, and syringes.','A payer owes the office for a recently submitted insurance claim.','A patient owes the office after insurance posted a deductible.','A secondary payer owes after the primary payer finished payment.'],a:0,r:'A/P is money the practice owes to others such as vendors.'},
+{q:'Which phrase best separates receivable from payable?',o:['Receivable is money coming in; payable is money going out.','Receivable is patient intake; payable is provider scheduling work.','Receivable is diagnosis coding; payable is procedure coding work.','Receivable is chart review; payable is appointment reminder work.'],a:0,r:'That is the simplest correct distinction for test questions.'},
+{q:'A patient owes $95 after insurance processing. This balance is:',o:['Accounts receivable because the practice should receive that money.','Accounts payable because the practice must pay that amount out.','Scheduling data because the next visit still has to be booked.','Clinical data because the diagnosis story has to be written.'],a:0,r:'A patient balance still owed to the practice is part of A/R.'}
+];
+const forms=[
+{q:'Which tool is a chronological summary of transactions posted?',o:['Day sheet or A/R journal summarizing daily posted transactions.','CMS-1500 claim form submitting charges to an insurance payer.','Encounter form showing diagnoses and services from the visit.','Patient ledger showing one patient account over many dates.'],a:0,r:'The day sheet summarizes daily transactions in chronological order.'},
+{q:'Which tool is the individual patient account record?',o:['Patient ledger listing charges, payments, adjustments, and balance.','Day sheet listing totals from many patients posted that day.','CMS-1500 listing claim data sent to a third-party payer.','Appointment book listing visits, times, and schedule reminders.'],a:0,r:'The patient ledger is the patient account record.'},
+{q:'Which form submits charges to a third-party payer?',o:['CMS-1500 claim form used for professional insurance billing.','Patient ledger used for personal account balance tracking.','Day sheet used for the daily transaction summary process.','Encounter form used for the provider visit documentation.'],a:0,r:'CMS-1500 is the correct insurance claim form.'},
+{q:'Which record best shows services rendered during a visit?',o:['Encounter form or superbill recording services rendered today.','Aging report or payer worklist grouping unpaid balances only.','Patient statement or billing notice mailed after processing.','Vendor invoice or office bill showing outside practice costs.'],a:0,r:'Encounter forms and superbills connect the visit to services and charges.'},
+{q:'Which record should be reviewed before billing the patient after partial payment?',o:['The EOB because it explains paid, denied, and remaining amounts.','The appointment book because it shows the next office visit time.','The day sheet because it shows totals posted across the office.','The sign-in log because it shows when the patient arrived.'],a:0,r:'The EOB explains why money remains after payer processing.'}
+];
+const reportQs=[
+{q:'From Example 1, which claim should be worked first?',o:['Patel because it is oldest, largest, and still entirely unpaid.','Rivera because it is current, recent, and still in processing.','Kim because it has partial payment and no balance concern.','Lopez because it is smaller and easier to complete quickly.'],a:0,r:'Patel is the highest priority because it is old, high-dollar, and unworked.'},
+{q:'Kim shows $610 charged, $260 paid, and $350 remaining. What next?',o:['Review the EOB to learn why the remaining balance still exists.','Send the balance to collections before checking any details.','Delete the remaining balance because some payment already posted.','Assume a coding error without reading any payer response first.'],a:0,r:'Always review the EOB before deciding the next step.'},
+{q:'Which information can Example 1 reasonably show?',o:['Unpaid balances grouped by payer, age, status, and bucket.','Future missed appointments grouped by provider and location.','Bank deposits grouped by week and office account balance.','Provider notes grouped by diagnosis and treatment story.'],a:0,r:'Aging reports focus on outstanding balances, not bank deposits or clinical notes.'},
+{q:'If a report shows current, 31–60, 61–90, and 91+ patient balances, it is most likely:',o:['A patient aging report used to track patient responsibility.','A denial report used to track corrected claim resubmission.','A day sheet used to track daily posted office activity.','A claim form used to track line-item coding submissions.'],a:0,r:'That structure matches a patient aging report.'},
+{q:'If a list shows rejected claims grouped by payer and reason, it is most likely:',o:['A rejection or denial worklist used for follow-up correction.','A patient ledger used for one patient financial history.','A day sheet used for daily transaction entry review.','A schedule report used for provider appointment management.'],a:0,r:'That is the best fit for rejected claims organized by payer.'}
+];
+const calc=[
+{q:'A claim has $700 charged, $300 paid, and $100 adjusted. Balance?',o:['$300 remains because 700 minus 300 minus 100 equals 300.','$400 remains because only the payment should be subtracted.','$500 remains because the adjustment should be added back.','$1,100 remains because all values should be combined.'],a:0,r:'Use balance = charge − payment − adjustment.'},
+{q:'A claim billed 50 days ago appears in which bucket?',o:['31–60 days because the claim is past the current range.','0–30 days because every claim begins inside that group.','61–90 days because follow-up always starts after 60 days.','120+ days because every unpaid claim becomes high risk.'],a:0,r:'Fifty days belongs in the 31–60 day bucket.'},
+{q:'If unpaid balances are $900, $350, and $250, total A/R is:',o:['$1,500 because all unpaid balances must be added together.','$1,250 because the oldest claim should be counted twice.','$900 because only the highest outstanding claim is counted.','$600 because payer balances should be divided by patient type.'],a:0,r:'Add all outstanding balances to find total A/R.'},
+{q:'A claim is 84 days old. Which bucket is correct?',o:['61–90 days because 84 falls inside that time range.','31–60 days because it has not crossed 90 days yet.','91–120 days because it is close to the urgent range.','120+ days because it has passed the current processing range.'],a:0,r:'84 days belongs in the 61–90 bucket.'},
+{q:'A claim shows $640 charged, $190 paid, and $50 adjusted. Balance?',o:['$400 remains because 640 minus 190 minus 50 equals 400.','$450 remains because the adjustment should not be counted.','$500 remains because only the payer payment is subtracted.','$240 remains because the charge and payment should be reversed.'],a:0,r:'640 − 190 − 50 = 400.'}
+];
+const activityQs=[
+{q:'A payer says a claim was denied because the member ID was incorrect. Best next step?',o:['Verify the member ID, correct the claim, and resubmit it.','Schedule the patient again and ignore the billing problem.','Write off the balance because the payer already responded.','Move the claim into accounts payable for vendor payment.'],a:0,r:'Incorrect member ID is a correct-and-resubmit issue.'},
+{q:'A claim is 129 days old with zero payment and no notes. Best first priority?',o:['Work it immediately because it is old, unpaid, and high risk.','Leave it alone because the payer may still process it later.','Bill the patient first even though the payer has not responded.','Delete the balance because unworked claims are usually closed.'],a:0,r:'Old zero-pay claims need immediate follow-up.'},
+{q:'Which sentence best uses the phrase “services rendered”?',o:['Services rendered are the care and procedures provided today.','Services rendered are the bills the office owes to vendors.','Services rendered are the reminders sent before an appointment.','Services rendered are the unpaid claims grouped by age.'],a:0,r:'Rendered means provided or performed for the patient.'},
+{q:'Why should a short follow-up note include the next action?',o:['It shows what should happen next and keeps follow-up organized.','It makes the note longer and more formal for style reasons.','It replaces the need to review the EOB or payer response.','It changes the balance automatically inside the practice software.'],a:0,r:'A next step keeps claim work organized and traceable.'}
+];
+const challenge=[
+{q:'A question asks for outstanding balances organized by date. Best answer?',o:['An aging report grouping unpaid balances by date or age range.','An appointment report grouping visits by scheduled time blocks.','A vendor report grouping supplies by company and invoice date.','A sign-in report grouping arrivals by waiting room sequence.'],a:0,r:'That wording points to an aging report.'},
+{q:'A question asks for rejected claims organized by payer. Best answer?',o:['A denial or rejection worklist organized by payer and reason.','A patient ledger organized by one patient account history.','A claim form organized by procedure and diagnosis lines.','A schedule report organized by appointment and provider time.'],a:0,r:'Rejected claims grouped by payer match a rejection worklist.'},
+{q:'Which statement about patient ledgers is correct?',o:['They show one patient’s charges, payments, adjustments, balance.','They show all office transactions posted across the whole day.','They submit professional charges to a third-party insurance payer.','They organize claims outstanding by age and aging bucket.'],a:0,r:'That is the definition of a patient ledger.'},
+{q:'A claim was denied for eligibility at 110 days. Best first action?',o:['Verify eligibility on the date of service and document follow-up.','Send a future appointment reminder and close the claim file.','Ignore the denial because old claims should not be worked.','Pay the vendor invoice because this is accounts payable.'],a:0,r:'Eligibility denials require verification on the DOS and proper follow-up.'},
+{q:'Which phrase best describes accounts payable?',o:['Money the practice owes to vendors, landlords, and suppliers.','Money the payer owes after claims were billed and processed.','Money the patient owes after deductibles and coinsurance apply.','Money the provider receives after a bank deposit is made.'],a:0,r:'That is the correct definition of A/P.'},
+{q:'Which option is the best clue for the CMS-1500 form?',o:['Professional claim submitted to a third-party payer for payment.','Daily transaction summary created after posting office charges.','Individual patient account showing charges and payments over time.','Visit note listing services rendered during the encounter.'],a:0,r:'CMS-1500 is the claim form.'},
+{q:'Which claim would usually take priority for follow-up?',o:['The oldest high-balance unpaid claim with no work documented.','The newest low-balance claim still inside payer processing time.','The scheduled visit that has not started the check-in process.','The office rent bill that arrived from the building owner.'],a:0,r:'Age, balance, and no work documented make it highest priority.'},
+{q:'If a patient aging report shows $95 in the 61–90 column, it means:',o:['The patient owes $95 that has been outstanding for 61–90 days.','The payer owes $95 that was denied and sent to collections.','The office owes $95 to a vendor for a medical supply order.','The provider earned $95 that was already deposited in cash.'],a:0,r:'That is patient responsibility aged 61–90 days.'}
+];
+
+render('quiz-aging','Aging Reports',aging);
+render('quiz-arap','A/R and A/P',arap);
+render('quiz-forms','Forms and Records',forms);
+render('quiz-report','Read Reports',reportQs);
+render('quiz-calc','Calculations',calc);
+render('quiz-activity','Activities',activityQs);
+
+
+
+const flashcardsData=[
+{
+  title:'Aging Report',
+  what:'Lists unpaid balances by how long they have been outstanding.',
+  shows:'Payer name, balance amount, days outstanding, and aging bucket.',
+  confusion:'Students often confuse it with a payment report or an appointment report. A payment report focuses on money already paid or posted. An appointment report focuses on scheduling, dates, and visits — not unpaid balances.',
+  q:'A report shows payer name, balance, days outstanding, and 61–90 / 120+ buckets. What is the strongest conclusion?',
+  opts:['It is an aging report because the unpaid balances are organized by time outstanding.','It is a payment report because it proves exactly what each payer already paid.'],
+  ans:0,
+  rat:'The key clue is days outstanding and aging buckets. A payment report focuses on payments already posted, not unpaid balances organized by age.',
+  bg:'linear-gradient(135deg,#00A8E8,#5DD6FF 55%,#B7F0FF)',
+  memory:'Find <u class="keyblue">unpaid balances</u> grouped by <u class="keyblue">days outstanding</u>.',
+  clue:'Clue words: outstanding claims, aging bucket, payer follow-up.'
+},
+{
+  title:'Accounts Receivable',
+  what:'Money owed to the provider for services already rendered.',
+  shows:'Unpaid insurance claims and patient balances still due to the practice.',
+  confusion:'Students may confuse this with accounts payable. A/R is money coming in to the office. A/P is money going out from the office to vendors or other businesses.',
+  q:'A patient had services rendered, insurance processed the claim, and $95 remains due to the office. What is this?',
+  opts:['Accounts receivable because money is still owed to the practice.','Accounts payable because the office must pay that $95 to someone else.'],
+  ans:0,
+  rat:'This is A/R because the practice is waiting to receive money. A/P would be a bill the practice owes out to a vendor or another business.',
+  bg:'linear-gradient(135deg,#00C853,#5EF08D 55%,#DFFFF0)',
+  memory:'A/R means money the practice should <u class="keygreen">receive</u>.',
+  clue:'Clue words: owed to provider, unpaid balance, services rendered.'
+},
+{
+  title:'Accounts Payable',
+  what:'Money the practice owes to others outside the practice.',
+  shows:'Vendor bills, rent, utilities, equipment costs, and office services.',
+  confusion:'Students may confuse this with accounts receivable. A/P is not money owed by patients or payers. It is money the practice must pay out.',
+  q:'The office receives a bill for exam gloves and paper from a medical supply company. What is this?',
+  opts:['Accounts payable because the practice owes money to a vendor.','Accounts receivable because the vendor still owes the practice money.'],
+  ans:0,
+  rat:'This is A/P because the practice has to pay a vendor. A/R is the opposite direction: money owed to the practice.',
+  bg:'linear-gradient(135deg,#FF8F00,#FFC54D 55%,#FFF0B5)',
+  memory:'A/P means money the practice must <u class="keyorange">pay out</u>.',
+  clue:'Clue words: vendor, rent, supplies, office bill.'
+},
+{
+  title:'Day Sheet / A/R Journal',
+  what:'Chronological summary of transactions posted for the day.',
+  shows:'Daily charges, payments, and adjustments across many accounts.',
+  confusion:'Students may confuse it with the patient ledger. The day sheet summarizes the day. The patient ledger focuses on one patient account over time.',
+  q:'A report summarizes all charges, payments, and adjustments posted today across the office. What is the best match?',
+  opts:['Day sheet / A/R journal because it summarizes daily transactions.','Patient ledger because it only follows one patient over time.'],
+  ans:0,
+  rat:'The word “daily” and “posted today” point to the day sheet/A/R journal. A patient ledger is narrower: one patient account history.',
+  bg:'linear-gradient(135deg,#7C4DFF,#A77BFF 55%,#E6D8FF)',
+  memory:'Think <u class="keypurple">daily chronological summary</u>.',
+  clue:'Clue words: posted today, daily totals, transaction summary.'
+},
+{
+  title:'Patient Ledger',
+  what:'Individual patient account record over time.',
+  shows:'Charges, payments, adjustments, and the current balance for one patient.',
+  confusion:'Students may confuse it with the day sheet. A patient ledger tracks one account only, not the entire office posting day.',
+  q:'You need to see one patient’s account history, including charges, payments, adjustments, and balance. Which tool fits best?',
+  opts:['Patient ledger because it follows one patient account over time.','Day sheet because it summarizes every patient’s daily transactions.'],
+  ans:0,
+  rat:'The clue is one patient’s account history. The day sheet is broader and summarizes the office’s daily transactions.',
+  bg:'linear-gradient(135deg,#FF4081,#FF77A8 55%,#FFDDEA)',
+  memory:'Think <u class="keyred">one patient account</u>.',
+  clue:'Clue words: charges, payments, adjustments, patient balance.'
+},
+{
+  title:'CMS-1500',
+  what:'Professional claim form submitted to a third-party payer.',
+  shows:'Patient, provider, diagnosis, procedure, and charge information used for billing.',
+  confusion:'Students may confuse it with the encounter form or superbill. The CMS-1500 is used to submit the claim. The encounter form helps capture the visit details before claim submission.',
+  q:'A question asks which form is used to submit professional charges to a third-party payer. What should you choose?',
+  opts:['CMS-1500 because it is the professional claim submission form.','Encounter form because it replaces the claim form after the visit.'],
+  ans:0,
+  rat:'CMS-1500 is the payer submission form. The encounter form helps collect visit information but is not the final claim form sent to the payer.',
+  bg:'linear-gradient(135deg,#2962FF,#6FA1FF 55%,#DAE6FF)',
+  memory:'Used to <u class="keyblue">submit charges</u> to a payer.',
+  clue:'Clue words: third-party payer, claim form, professional billing.'
+},
+{
+  title:'Encounter Form / Superbill',
+  what:'Visit-based record of diagnoses, procedures, and services rendered.',
+  shows:'Visit details that support coding, charge capture, and billing preparation.',
+  confusion:'Students may confuse it with the CMS-1500. The encounter form records what happened during the visit. The CMS-1500 submits the final billing claim.',
+  q:'A provider marks diagnoses and procedures after seeing the patient so charges can be created. Which tool is this?',
+  opts:['Encounter form / superbill because it captures services rendered during the visit.','CMS-1500 because it is the provider’s internal visit checklist.'],
+  ans:0,
+  rat:'The encounter form/superbill captures the visit details and services rendered. CMS-1500 is the claim form submitted to the payer.',
+  bg:'linear-gradient(135deg,#00B8A9,#45E0D1 55%,#D5FFFB)',
+  memory:'Used to record <u class="keyteal">services rendered</u>.',
+  clue:'Clue words: diagnosis, procedure, provider, visit details.'
+},
+{
+  title:'EOB',
+  what:'Explanation of Benefits showing how the payer processed the claim.',
+  shows:'Paid amount, denied amount, adjustment, and patient responsibility.',
+  confusion:'Students may confuse it with the aging report. The EOB explains one processed claim result. The aging report lists unpaid balances that still need follow-up.',
+  q:'A claim was partially paid, and a balance remains. Before billing the patient, what should you review?',
+  opts:['EOB because it explains payment, denial, adjustment, and patient responsibility.','Aging report because it replaces the payer’s processing explanation.'],
+  ans:0,
+  rat:'Review the EOB first. It explains why the balance remains. The aging report shows the balance is outstanding, but it does not fully explain payer processing.',
+  bg:'linear-gradient(135deg,#8E24AA,#C25CDB 55%,#F2D9FF)',
+  memory:'Review this before billing the <u class="keypurple">patient balance</u>.',
+  clue:'Clue words: patient responsibility, denial, adjustment, payer decision.'
+},
+{
+  title:'Rejection / Denial Worklist',
+  what:'List of claims that need correction or follow-up action.',
+  shows:'Payer, claim number, denial reason, and the next action to take.',
+  confusion:'Students may confuse it with an aging report. A denial worklist focuses on rejected or denied claims and why they failed. An aging report focuses on unpaid outstanding balances by age.',
+  q:'A report groups rejected claims by payer and gives reasons such as missing modifier or invalid member ID. What is it?',
+  opts:['Rejection / denial worklist because it groups failed claims by payer and reason.','Patient aging report because it shows future missed appointments and balances.'],
+  ans:0,
+  rat:'This is a rejection/denial worklist. The strongest clue is the rejection reason and correction action, not merely the age of an unpaid balance.',
+  bg:'linear-gradient(135deg,#FF3D00,#FF8A65 55%,#FFE2D7)',
+  memory:'Shows claims that need <u class="keyorange">correction or action</u>.',
+  clue:'Clue words: rejected, denied, reason, resubmit, payer.'
+}
+];
+flashcards.innerHTML=flashcardsData.map((c,i)=>{
+  const order=(i%2===0)?[1,0]:[0,1];
+  return `<div class="flip" onclick="this.classList.toggle('f')"><div class="flipin"><div class="front" style="background:${c.bg}"><span class="tag">Study card</span><h4>${c.title}</h4><div class="memory">${c.memory}</div><div class="flashhint">${c.clue}</div></div><div class="back" style="background:${c.bg}"><span class="tag">Key details</span><h4>${c.title}</h4><div class="boxline"><span class="fcbox know"><span class="fclabel">💡 Need to know</span><span class="fccontent">${c.what}</span></span><span class="fcbox show"><span class="fclabel">📋 What it shows</span><span class="fccontent">${c.shows}</span></span><span class="fcbox confuse"><span class="fclabel">⚠️ Common confusion</span><span class="fccontent">${c.confusion}</span></span><span class="fcbox check"><span class="fclabel">✅ Concept check</span><span class="fccontent">${c.q}</span><span class="fcopts">${order.map(optIndex=>`<button class="fcopt" data-opt="${optIndex}" onclick="fcCheck(event,this,${i},${optIndex})">${c.opts[optIndex]}</button>`).join('')}</span><span class="fcfeedback" id="fcfb${i}"></span></span></div></div></div></div>`;
+}).join('');
+function fcCheck(event,btn,cardIndex,optIndex){
+  event.stopPropagation();
+  const c=flashcardsData[cardIndex];
+  const box=btn.closest('.fcbox');
+  if(box.dataset.done) return;
+  box.dataset.done='1';
+  box.querySelectorAll('.fcopt').forEach((b)=>{
+    const thisOpt=Number(b.dataset.opt);
+    b.classList.add(thisOpt===c.ans?'good':'bad');
+  });
+  const fb=document.getElementById('fcfb'+cardIndex);
+  if(optIndex===c.ans){fb.className='fcfeedback good';fb.textContent='Correct. '+c.rat;}
+  else{fb.className='fcfeedback bad';fb.textContent='Not yet. '+c.rat;}
+}
+
+let chalIndex=0, chalCorrect=0, chalTimer=120, chalInt=null, chalDone=false;
+function startChallenge(){
+  chalIndex=0; chalCorrect=0; chalTimer=120; chalDone=false;
+  clearInterval(chalInt);
+  document.getElementById('startChallengeBtn').style.display='none';
+  renderChallengeQuestion();
+  chalInt=setInterval(()=>{chalTimer--; const m=String(Math.floor(chalTimer/60)).padStart(2,'0'); const s=String(chalTimer%60).padStart(2,'0'); document.getElementById('timer').textContent=`${m}:${s}`; if(chalTimer<=0){endChallenge()}},1000);
+}
+function renderChallengeQuestion(){
+  const area=document.getElementById('challengeArea');
+  if(chalIndex>=challenge.length){endChallenge();return;}
+  const q=challenge[chalIndex];
+  const choices=balancedChoices(q,chalIndex,'Challenge');
+  area.innerHTML=`<div class="quiz"><h4>Challenge ${chalIndex+1} of ${challenge.length}</h4><p style="margin-bottom:8px;color:var(--tx2)">${q.q}</p><div class="opts">${choices.map(item=>`<button class="op" onclick="challengeAnswer(${item.ok},'${q.r.replace(/'/g,'&#39;')}')">${item.text}</button>`).join('')}</div><div class="fb" id="challengefb"></div></div>`;
+}
+function challengeAnswer(ok,rat){
+  const quiz=document.querySelector('#challengeArea .quiz');
+  if(quiz.dataset.done) return; quiz.dataset.done='1';
+  quiz.querySelectorAll('.op').forEach(o=>o.classList.add('x'));
+  const fb=document.getElementById('challengefb');
+  state.answered++; state.byCat['Challenge']??={a:0,c:0}; state.byCat['Challenge'].a++;
+  if(ok){chalCorrect++; state.correct++; state.score+=10; state.byCat['Challenge'].c++; fb.className='fb c'; fb.textContent='Correct. '+rat;}
+  else{fb.className='fb w'; fb.textContent='Not yet. '+rat;}
+  update();
+  setTimeout(()=>{chalIndex++; renderChallengeQuestion()},850);
+}
+function endChallenge(){
+  clearInterval(chalInt); chalDone=true; document.getElementById('timer').textContent='00:00';
+  document.getElementById('challengeArea').innerHTML=`<div class="card"><h3>Challenge Complete</h3><p>You answered <b>${chalCorrect}</b> of <b>${challenge.length}</b> challenge questions correctly.</p><p>Use the Student Report tab to review your overall progress.</p><div style="margin-top:10px"><button class="btn pur" onclick="startChallenge()">Try Again</button></div></div>`;
+  document.getElementById('startChallengeBtn').style.display='inline-block';
+}
+
+
+function checkInspection(){
+  const checks=[...document.querySelectorAll('#agingChecklist input')];
+  let selectedYes=0, missedYes=0, selectedNo=0;
+  checks.forEach(c=>{
+    const should=c.value==='yes';
+    const chosen=c.checked;
+    const box=c.closest('.checkitem');
+    box.style.borderColor='#e5dbd0';
+    box.style.background='#fff';
+    if(should && chosen){selectedYes++; box.style.borderColor='#2fbf71'; box.style.background='#edfff4';}
+    if(should && !chosen){missedYes++; box.style.borderColor='#ffb020'; box.style.background='#fff8e5';}
+    if(!should && chosen){selectedNo++; box.style.borderColor='#d94b4b'; box.style.background='#fff0f0';}
+  });
+  const result=document.getElementById('inspectResult');
+  result.classList.add('show');
+  const perfect=selectedYes===6 && missedYes===0 && selectedNo===0;
+  if(perfect){state.score+=20; state.correct++; state.answered++; state.byCat['Aging Inspection']??={a:0,c:0}; state.byCat['Aging Inspection'].a++; state.byCat['Aging Inspection'].c++; update();}
+  else{state.answered++; state.byCat['Aging Inspection']??={a:0,c:0}; state.byCat['Aging Inspection'].a++; update();}
+  result.innerHTML=`<p><span class="${perfect?'good':'bad'}">${perfect?'Excellent inspection.':'Review your inspection.'}</span></p>
+  <p><b>Now check the meaning of each item:</b></p>
+  <div class="inspect-explain">
+    <div class="ans yes"><b>Patient name — appears</b>This identifies whose claim or balance is being tracked.</div>
+    <div class="ans yes"><b>Third-party payer — appears</b>This shows the insurance plan or payer connected to the outstanding claim.</div>
+    <div class="ans yes"><b>Claim number — appears</b>This helps the biller track and reference the specific claim.</div>
+    <div class="ans yes"><b>DOS and billed date — appear</b>These help compare when the service happened and when the claim was sent.</div>
+    <div class="ans yes"><b>Charge, paid, and balance — appear</b>These show the financial status of the claim and what remains unpaid.</div>
+    <div class="ans yes"><b>Days outstanding and age bucket — appear</b>These show how old the unpaid balance is and how urgent follow-up may be.</div>
+    <div class="ans no"><b>Upcoming missed appointments — not shown</b>That belongs to scheduling or appointment reports, not aging reports.</div>
+    <div class="ans no"><b>Full clinical progress note — not shown</b>That belongs to the medical record, not the aging report.</div>
+    <div class="ans no"><b>Every completed payer payment — not shown</b>Payment reports, EOBs, or payment posting records explain completed payment activity more directly.</div>
+    <div class="ans no"><b>Office rent and vendor bills — not shown</b>That belongs to accounts payable, not accounts receivable aging.</div>
+  </div>
+  <p style="margin-top:10px"><b>Critical idea:</b> an aging report is about <u>outstanding balances</u>. A payment report is about payments received. An appointment report is about visits. A patient ledger is about one patient account. An EOB explains one payer decision.</p>`;
+}
+
+function buildReport(){
+  const pct=state.answered?Math.round((state.correct/state.answered)*100):0;
+  const lines=[];
+  lines.push('CBCS Aging Reports, A/R, A/P & Billing Tools Report');
+  lines.push('');
+  lines.push('Overall results');
+  lines.push('Points: '+state.score);
+  lines.push('Answered: '+state.answered);
+  lines.push('Correct: '+state.correct);
+  lines.push('Accuracy: '+pct+'%');
+  lines.push('');
+  lines.push('Section performance');
+  const order=['Aging Reports','A/R and A/P','Forms and Records','Read Reports','Calculations','Activities','Challenge'];
+  let has=false;
+  order.forEach(k=>{if(state.byCat[k]){has=true; const v=state.byCat[k]; lines.push('- '+k+': '+v.c+'/'+v.a+' correct');}});
+  if(!has) lines.push('- No questions answered yet.');
+  lines.push('');
+  lines.push('Current strengths');
+  const strong=order.filter(k=>state.byCat[k] && state.byCat[k].c===state.byCat[k].a && state.byCat[k].a>0);
+  if(strong.length) strong.forEach(k=>lines.push('- Strong understanding in '+k+'.')); else lines.push('- Build strength by answering more sections completely.');
+  lines.push('');
+  lines.push('Next review targets');
+  const weak=order.filter(k=>state.byCat[k] && state.byCat[k].c<state.byCat[k].a);
+  if(weak.length){weak.forEach(k=>lines.push('- Review '+k+' and reread the examples before trying again.'));}
+  else if(state.answered>0){lines.push('- Continue challenge practice to keep the ideas fresh.');}
+  else{lines.push('- Start with flashcards, then move to Aging Reports and A/R vs A/P.');}
+  lines.push('');
+  lines.push('Key reminders');
+  lines.push('- Aging reports show outstanding balances organized by date or age bucket.');
+  lines.push('- Aging reports do not show upcoming missed appointments or full clinical progress notes.');
+  lines.push('- Payment reports show received payments; appointment reports show scheduling status.');
+  lines.push('- A/R is money owed to the provider; A/P is money owed by the practice.');
+  lines.push('- Day sheet is chronological; patient ledger is the individual account record.');
+  lines.push('- CMS-1500 submits charges; encounter form records services rendered.');
+  lines.push('- Review the EOB before billing the patient after partial payment.');
+  document.getElementById('report').textContent=lines.join('\n');
+  update();
+}
+function copyReport(){buildReport();navigator.clipboard.writeText(document.getElementById('report').textContent).then(()=>{copyokEl.style.display='inline';setTimeout(()=>copyokEl.style.display='none',1500)})}
+update(); showTab(0);
+</script>
+</body>
+</html>
